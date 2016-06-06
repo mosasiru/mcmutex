@@ -44,4 +44,3 @@ retry interval (default: 10ms)
 ###  Expiration
 
 lock will be expired after Expiration time (default: 30s)
-

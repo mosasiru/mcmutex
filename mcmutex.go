@@ -1,3 +1,4 @@
+// package mcmutex provides a mutex using memcached(golibmc)
 package mcmutex
 
 import (
@@ -7,20 +8,29 @@ import (
 )
 
 const (
-	DefaultInterval   = 10 * time.Millisecond
+	// default values used by func NewMCMutex()
 	DefaultRetry      = 0
+	DefaultInterval   = 10 * time.Millisecond
 	DefaultExpiration = 30
 )
 
+// ErrLockFailed means failure to aquire lock after all retrys.
 var ErrLockFailed = errors.New("failed to acquire lock")
 
 type MCMutex struct {
-	Interval   time.Duration
-	Retry      int
+	client *golibmc.Client
+
+	// retry interval
+	Interval time.Duration
+
+	// retry count before acquisition lock (default: 0)
+	Retry int
+
+	// lock will be expired after Expiration time (default: 30s)
 	Expiration int64
-	client     *golibmc.Client
 }
 
+// NewMCMutex create *MCMutex using default configure.
 func NewMCMutex(mc *golibmc.Client) *MCMutex {
 	return &MCMutex{
 		client:     mc,
@@ -30,6 +40,8 @@ func NewMCMutex(mc *golibmc.Client) *MCMutex {
 	}
 }
 
+// Get lock of the key, or sleep and retry to get lock according to configuration.
+// Lock returns err when fail to aquire lock or got memcached error.
 func (m *MCMutex) Lock(key string) error {
 	for i := 0; i <= m.Retry; i++ {
 		if err := m.client.Add(&golibmc.Item{Key: key, Value: []byte{1}, Expiration: m.Expiration}); err != nil {
@@ -44,6 +56,8 @@ func (m *MCMutex) Lock(key string) error {
 	return ErrLockFailed
 }
 
+// Release lock of the key.
+// Unlock returns err when lock is already free or got memcached error.
 func (m *MCMutex) Unlock(key string) error {
 	return m.client.Delete(key)
 }
