@@ -26,9 +26,12 @@ After this command *mutex* is ready to use. Its source will be in:
 
     func main() {
         mc := golibmc.New([]string{"127.0.0.1:11211"})
-        mutex := NewMCMutex(mc)
+        mutex := mcmutex.NewMCMutex(mc)
         defer mutex.Unlock("key")
-        err := mutex.Lock("key")
+        if err := mutex.Lock("key"); err != nil {
+            println("lock failed")
+            return
+        }
         ...
     }
 
@@ -45,3 +48,8 @@ retry interval (default: 10ms)
 ###  Expiration
 
 lock will be expired after Expiration time (default: 30s)
+
+
+## Appendix
+
+This library features perl's KeyedMutex::Memcached (http://search.cpan.org/~zigorou/KeyedMutex-Memcached-0.01/lib/KeyedMutex/Memcached.pm)
