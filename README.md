@@ -5,6 +5,7 @@ This is a simple mutex library using memcached for the Go programming language
 
 Memcached client is golibmc (https://github.com/douban/libmc/blob/master/src/golibmc.go)
 
+GoDoc is Here (https://godoc.org/github.com/mosasiru/mcmutex)
 
 ## Installing
 
