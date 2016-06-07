@@ -22,6 +22,13 @@ func TestBasic(t *testing.T) {
 	if err := mutex.Lock(key); err == nil {
 		t.Errorf("lock through")
 	}
+
+	if err := mutex.Unlock(key); err != nil {
+		t.Error(err)
+	}
+	if err := mutex.Lock(key); err != nil {
+		t.Error(err)
+	}
 	time.Sleep(1 * time.Second)
 	if err := mutex.Lock(key); err != nil {
 		t.Error(err)
