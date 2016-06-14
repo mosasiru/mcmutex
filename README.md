@@ -25,7 +25,7 @@ After this command *mutex* is ready to use. Its source will be in:
     )
 
     func main() {
-        mc := golibmc.New([]string{"127.0.0.1:11211"})
+        mc := golibmc.SimpleNew([]string{"127.0.0.1:11211"})
         mutex := mcmutex.NewMCMutex(mc)
         defer mutex.Unlock("key")
         if err := mutex.Lock("key"); err != nil {
